@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Data;
 
 @Entity
@@ -20,5 +22,6 @@ public class Publisher {
 	private Long      id;
 	private String    name, telephone, address;
 	@OneToMany(mappedBy = "publisher")
+	@JsonBackReference
 	private Set<Book> book;
 }

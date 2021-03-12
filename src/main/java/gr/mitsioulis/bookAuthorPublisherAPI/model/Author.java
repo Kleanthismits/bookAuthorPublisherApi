@@ -10,9 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "authors")
 public class Author {
@@ -23,6 +27,7 @@ public class Author {
 	private String    firstName, lastName, emailAddress;
 	private LocalDate birthDate;
 	@OneToMany(mappedBy = "author")
+	@JsonBackReference
 	private Set<Book> book;
 
 }
