@@ -43,4 +43,10 @@ public class BookServiceImpl implements BookService {
 		return bookDao.findById(id);
 	}
 
+	@Override
+	public Optional<Book> findByISBN(String value) {
+
+		return Optional.ofNullable(bookDao.findByIsbn(Long.parseLong(value)));
+	}
+
 }

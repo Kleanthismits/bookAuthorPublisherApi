@@ -15,8 +15,9 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "books", uniqueConstraints = @UniqueConstraint(columnNames = { "isbn" }))
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Long.class)
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,11 +44,9 @@ public class Book {
 	private Long      isbn;
 	@ManyToOne
 	@JoinColumn(name = "author_id", nullable = false)
-	@JsonManagedReference
 	private Author    author;
 	@ManyToOne
 	@JoinColumn(name = "publisher_id", nullable = true)
-	@JsonManagedReference
 	private Publisher publisher;
 	@Transient
 	@JsonIgnore

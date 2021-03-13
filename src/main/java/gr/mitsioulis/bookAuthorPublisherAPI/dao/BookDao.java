@@ -14,4 +14,6 @@ public interface BookDao extends JpaRepository<Book, Long> {
 	@Query("SELECT book from Book book WHERE book.publisher.id IS NOT NULL")
 	public List<Book> findAllWithPublisher();
 
+	public Book findByIsbn(Long isbn);
+
 }

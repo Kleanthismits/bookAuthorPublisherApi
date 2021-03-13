@@ -81,10 +81,10 @@ public class BookController {
 	}
 
 	@ExceptionHandler({ NoSuchElementException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	ApiError handleNoSuchElementException(NoSuchElementException exception, HttpServletRequest request) {
 
-		ApiError apiError = new ApiError(400, "Element not found error", request.getServletPath());
+		ApiError apiError = new ApiError(404, "Element not found error", request.getServletPath());
 		String errorMessage = exception.getMessage();
 		apiError.setMessage(errorMessage);
 		return apiError;
