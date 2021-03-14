@@ -11,4 +11,14 @@ public class ISBNUtils {
 		sb.insert(15, '-');
 		return sb.toString();
 	}
+
+	public static Long getISBNFromPresentation(String isbn) throws NumberFormatException {
+		String normal = isbn.replace("-", "");
+		return Long.parseLong(normal);
+	}
+
+	public static String getStringISBNFromPresentation(String isbn) {
+		String normal = isbn.replace("-", "");
+		return normal;
+	}
 }

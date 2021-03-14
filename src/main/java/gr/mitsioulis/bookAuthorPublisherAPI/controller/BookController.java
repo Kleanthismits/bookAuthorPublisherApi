@@ -3,6 +3,7 @@
  */
 package gr.mitsioulis.bookAuthorPublisherAPI.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,10 +25,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import gr.mitsioulis.bookAuthorPublisherAPI.common.ApiError;
+import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookDTO;
 import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookListDTO;
 import gr.mitsioulis.bookAuthorPublisherAPI.dto.SingleBookDTO;
 import gr.mitsioulis.bookAuthorPublisherAPI.model.Book;
@@ -47,11 +52,9 @@ public class BookController {
 	AuthorService authorService;
 
 	@GetMapping("/books")
-	List<BookListDTO> findAllWithPublisher() {
-		List<Book> findAllWithPublisher = bookService.findAllWithPublisher();
-		findAllWithPublisher.forEach(b -> {
-			System.out.println(b.getAuthor().getLastName() + " " + b.getId());
-		});
+	List<BookListDTO> findAllWithPublisher(
+			@RequestParam(value = "withPublishers", required = false, defaultValue = "false") Boolean withPublishers) {
+		List<Book> findAllWithPublisher = withPublishers ? bookService.findAllWithPublisher() : bookService.findAll();
 		return findAllWithPublisher.stream().map(book -> new BookListDTO(book)).collect(Collectors.toList());
 	}
 
@@ -59,13 +62,16 @@ public class BookController {
 	SingleBookDTO getBookById(@PathVariable Long id) {
 
 		return new SingleBookDTO(
-				bookService.findById(id).orElseThrow(() -> new NoSuchElementException("No book found for provided id")));
+				bookService.findById(id).orElseThrow(() -> new NoSuchElementException("No book found for id: " + id)));
 	}
 
 	@PostMapping("/books")
-	Book createBook(@Valid @RequestBody Book book, HttpServletRequest request) {
-
-		return bookService.saveBook(book);
+	ResponseEntity<Book> createBook(@Valid @RequestBody BookDTO bookDTO) {
+		Book savedBook = bookService.saveBook(new Book(bookDTO));
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedBook.getId())
+				.toUri();
+		System.out.println(savedBook);
+		return ResponseEntity.created(location).body(savedBook);
 	}
 
 	@ExceptionHandler({ MethodArgumentNotValidException.class })

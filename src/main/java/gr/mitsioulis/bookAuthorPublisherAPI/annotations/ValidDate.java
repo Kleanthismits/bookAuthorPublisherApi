@@ -17,7 +17,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = ValidDateValidator.class)
 public @interface ValidDate {
 
-	String message() default "invalid date";
+	String message() default "Date should be of format: dd/MM/yyyy";
 
 	Class<?>[] groups() default {};
 

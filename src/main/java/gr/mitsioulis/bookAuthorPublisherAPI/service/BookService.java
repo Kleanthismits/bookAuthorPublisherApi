@@ -15,6 +15,6 @@ public interface BookService {
 
 	Optional<Book> findById(Long id);
 
-	Optional<Book> findByISBN(String value);
+	Optional<Book> findByISBN(Long value);
 
 }
