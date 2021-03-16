@@ -1,5 +1,7 @@
 package gr.mitsioulis.bookAuthorPublisherAPI.annotations;
 
+import java.util.Optional;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -15,16 +17,33 @@ public class ValidAuthorValidator implements ConstraintValidator<ValidAuthor, Au
 	@Autowired
 	AuthorService authorService;
 
+	private Boolean isOptional;
+
+	@Override
+	public void initialize(ValidAuthor validAuthor) {
+		this.isOptional = validAuthor.optional();
+	}
+
 	@Override
 	public boolean isValid(Author value, ConstraintValidatorContext context) {
-		boolean valid = true;
-		context.disableDefaultConstraintViolation();
 
-		if (!authorService.findById(value.getId()).isPresent()) {
-			valid = false;
+		if (isOptional && value == null) {
+			return true;
+		}
+		boolean validAuthor = isValidAuthor(value);
+		if (!validAuthor) {
+			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate("no author with id: " + value.getId()).addConstraintViolation();
 		}
-		return valid;
+		return validAuthor;
+	}
+
+	private boolean isValidAuthor(Author value) {
+		Optional<Author> auth = null;
+		if (value != null && value.getId() != null) {
+			auth = authorService.findById(value.getId());
+		}
+		return auth.isPresent();
 	}
 
 }

@@ -4,11 +4,14 @@
 package gr.mitsioulis.bookAuthorPublisherAPI.controller;
 
 import java.net.URI;
+import java.util.NoSuchElementException;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,18 +27,25 @@ import gr.mitsioulis.bookAuthorPublisherAPI.service.PublisherService;
  *
  */
 @RestController
-@RequestMapping(value = "/api/1.0")
+@RequestMapping(value = { "/api/1.0" }, produces = { "application/json" }, consumes = { "application/json" })
 public class PublisherController {
 
 	@Autowired
 	PublisherService publisherService;
 
 	@PostMapping(value = "/publishers")
-	ResponseEntity<PublisherDTO> createPublisher(@Valid @RequestBody Publisher publisher) {
+	ResponseEntity<PublisherDTO> createPublisher(@Valid @RequestBody PublisherDTO publisherDTO) {
 
-		Publisher savedPublisher = publisherService.savePublisher(publisher);
+		Publisher savedPublisher = publisherService.savePublisher(new Publisher(publisherDTO));
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(savedPublisher.getId()).toUri();
 		return ResponseEntity.created(location).body(new PublisherDTO(savedPublisher));
 	}
+
+	@GetMapping("/publishers/{id}")
+	ResponseEntity<PublisherDTO> getAuthorById(@PathVariable Long id) {
+		return ResponseEntity.ok(new PublisherDTO(publisherService.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("No publisher found for id: " + id))));
+	}
+
 }

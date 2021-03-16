@@ -3,7 +3,7 @@ package gr.mitsioulis.bookAuthorPublisherAPI.dto;
 import java.time.format.DateTimeFormatter;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class AuthorDTO {
 
-	@NotNull
+	@NotBlank(message = "First name is required")
 	private String firstName;
-	@NotNull
+	@NotBlank(message = "Last name is required")
 	private String lastName;
 	@Email
 	private String emailAddress;
-	@ValidDate
+	@ValidDate(optional = true)
 	private String birthDate;
 
 	public AuthorDTO(Author author) {

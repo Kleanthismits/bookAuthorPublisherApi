@@ -20,12 +20,12 @@ public class ValidDateValidator implements ConstraintValidator<ValidDate, String
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
 
-		boolean validDate = isValidFormat(VALIDATED_DATE_FORMAT, value);
+		boolean validDate = isValidFormat(value);
 
 		return isOptional ? (validDate || (value == null || value.isEmpty())) : validDate;
 	}
 
-	private static boolean isValidFormat(String formats, String value) {
+	private static boolean isValidFormat(String value) {
 		LocalDate date = null;
 
 		try {

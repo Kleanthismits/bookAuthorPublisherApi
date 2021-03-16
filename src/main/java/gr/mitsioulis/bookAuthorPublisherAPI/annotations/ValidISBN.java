@@ -9,18 +9,22 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * Validate that an author with the annotated object's id exists in database
+ * Validate that the annotated string isbn is not already existing in database
  */
+
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ValidAuthorValidator.class)
-public @interface ValidAuthor {
+@Constraint(validatedBy = ValidIsbnValidator.class)
+public @interface ValidISBN {
 
-	String message() default "No author with such id";
+	String message() default "A book with the same ISBN number already exists";
 
 	Class<?>[] groups() default {};
 
 	Class<? extends Payload>[] payload() default {};
 
 	boolean optional() default false;
+
+	boolean checkDuplicate() default true;
+
 }

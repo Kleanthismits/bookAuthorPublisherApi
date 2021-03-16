@@ -1,4 +1,4 @@
-package gr.mitsioulis.bookAuthorPublisherAPI.common;
+package gr.mitsioulis.bookAuthorPublisherAPI.common.errors;
 
 import java.util.Date;
 import java.util.Map;

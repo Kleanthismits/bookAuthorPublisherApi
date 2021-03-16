@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookDTO;
+import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookUpdateDTO;
 import gr.mitsioulis.bookAuthorPublisherAPI.utils.ISBNUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "books", uniqueConstraints = @UniqueConstraint(columnNames = { "isbn" }))
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Long.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Book.class)
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,7 @@ public class Book {
 	private LocalDate creationDate;
 	@Min(value = 9780000000001l)
 	private Long      isbn;
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "author_id", nullable = false)
 	private Author    author;
 	@ManyToOne
@@ -53,10 +53,35 @@ public class Book {
 	public Book(BookDTO bookDTO) {
 		this.title = bookDTO.getTitle();
 		this.description = bookDTO.getDescription();
-		this.visibilityStatus = bookDTO.isVisible();
+		this.visibilityStatus = bookDTO.isVisibilityState();
 		this.creationDate = LocalDate.parse(bookDTO.getCreationDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		this.isbn = ISBNUtils.getISBNFromPresentation(bookDTO.getIsbn());
 		this.author = bookDTO.getAuthor();
 		this.publisher = bookDTO.getPublisher();
+	}
+
+	public void updateBook(BookUpdateDTO bookUpdateDTO) {
+		if (bookUpdateDTO.getAuthor() != null) {
+			this.setAuthor(bookUpdateDTO.getAuthor());
+		}
+		if (bookUpdateDTO.getPublisher() != null) {
+			this.setPublisher(bookUpdateDTO.getPublisher());
+		}
+		if (bookUpdateDTO.getTitle() != null) {
+			this.setTitle(bookUpdateDTO.getTitle());
+		}
+		if (bookUpdateDTO.getDescription() != null) {
+			this.setDescription(bookUpdateDTO.getDescription());
+		}
+		if (bookUpdateDTO.getVisibilityStatus() != null) {
+			this.setVisibilityStatus(bookUpdateDTO.getVisibilityStatus());
+		}
+		if (bookUpdateDTO.getCreationDate() != null) {
+			this.setCreationDate(
+					LocalDate.parse(bookUpdateDTO.getCreationDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		}
+		if (bookUpdateDTO.getIsbn() != null) {
+			this.setIsbn(ISBNUtils.getISBNFromPresentation(bookUpdateDTO.getIsbn()));
+		}
 	}
 }
