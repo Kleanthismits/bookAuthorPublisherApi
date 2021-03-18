@@ -1,12 +1,11 @@
 package gr.mitsioulis.bookAuthorPublisherAPI.dto;
 
-import javax.persistence.Column;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import gr.mitsioulis.bookAuthorPublisherAPI.annotations.ValidAuthor;
 import gr.mitsioulis.bookAuthorPublisherAPI.annotations.ValidDate;
@@ -22,30 +21,29 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(value = Include.NON_NULL)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = BookUpdateDTO.class)
 public class BookUpdateDTO {
 
-	private Long      id;
+	@Size(max = 500, message = "should be maximum 500 characters")
 	private String    title;
-	@Column(length = 65535)
+	@Size(max = 3000, message = "should be maximum 3000 characters")
 	private String    description;
-	private Boolean   visibilityStatus;
+	@Pattern(regexp = "^true$|^false$", message = "allowed input: 'true' or 'false'")
+	private String    visibilityStatus;
 	@ValidDate(optional = true)
 	private String    creationDate;
 	@ValidISBN(optional = true, checkDuplicate = false)
 	private String    isbn;
 	@ValidAuthor(optional = true)
-	@JsonIgnoreProperties({ "books", "firstName", "lastName", "emailAddress", "birthDate" })
+	@JsonIgnoreProperties({ "books" })
 	private Author    author;
 	@ValidPublisher(optional = true)
-	@JsonIgnoreProperties({ "books", "name", "telephone", "address" })
+	@JsonIgnoreProperties({ "books" })
 	private Publisher publisher;
 
 	public BookUpdateDTO(Book book) {
-		this.id = book.getId();
 		this.title = book.getTitle();
 		this.description = book.getDescription();
-		this.visibilityStatus = book.getVisibilityStatus();
+		this.visibilityStatus = book.getVisibilityStatus().toString();
 		this.isbn = ISBNUtils.getPresentationISBN(book.getIsbn());
 		this.author = book.getAuthor();
 		this.publisher = book.getPublisher();

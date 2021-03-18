@@ -34,18 +34,18 @@ public class PublisherController {
 	PublisherService publisherService;
 
 	@PostMapping(value = "/publishers")
-	ResponseEntity<PublisherDTO> createPublisher(@Valid @RequestBody PublisherDTO publisherDTO) {
+	ResponseEntity<Publisher> createPublisher(@Valid @RequestBody PublisherDTO publisherDTO) {
 
 		Publisher savedPublisher = publisherService.savePublisher(new Publisher(publisherDTO));
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(savedPublisher.getId()).toUri();
-		return ResponseEntity.created(location).body(new PublisherDTO(savedPublisher));
+		return ResponseEntity.created(location).body(savedPublisher);
 	}
 
 	@GetMapping("/publishers/{id}")
-	ResponseEntity<PublisherDTO> getAuthorById(@PathVariable Long id) {
-		return ResponseEntity.ok(new PublisherDTO(publisherService.findById(id)
-				.orElseThrow(() -> new NoSuchElementException("No publisher found for id: " + id))));
+	ResponseEntity<Publisher> getAuthorById(@PathVariable Long id) {
+		return ResponseEntity.ok(publisherService.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("No publisher found for id: " + id)));
 	}
 
 }

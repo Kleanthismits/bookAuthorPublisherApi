@@ -10,7 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -32,9 +34,12 @@ public class Author {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long      id;
+	@NotNull
 	private String    firstName;
+	@NotNull
 	private String    lastName;
 	private String    emailAddress;
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate birthDate;
 	@OneToMany(mappedBy = "author")
 	@Exclude

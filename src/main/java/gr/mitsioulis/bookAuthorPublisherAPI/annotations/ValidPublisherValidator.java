@@ -44,7 +44,7 @@ public class ValidPublisherValidator implements ConstraintValidator<ValidPublish
 		if (value != null && value.getId() != null) {
 			pub = publisherService.findById(value.getId());
 		}
-		return pub.isPresent();
+		return pub == null ? false : pub.isPresent();
 	}
 
 }

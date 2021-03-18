@@ -43,7 +43,7 @@ public class ValidAuthorValidator implements ConstraintValidator<ValidAuthor, Au
 		if (value != null && value.getId() != null) {
 			auth = authorService.findById(value.getId());
 		}
-		return auth.isPresent();
+		return auth == null ? false : auth.isPresent();
 	}
 
 }

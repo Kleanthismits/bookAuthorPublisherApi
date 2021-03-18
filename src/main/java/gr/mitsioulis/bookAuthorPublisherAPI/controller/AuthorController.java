@@ -34,11 +34,11 @@ public class AuthorController {
 	AuthorService authorService;
 
 	@PostMapping("/authors")
-	ResponseEntity<AuthorDTO> createAuthor(@Valid @RequestBody AuthorDTO authorDTO) {
+	ResponseEntity<Author> createAuthor(@Valid @RequestBody AuthorDTO authorDTO) {
 		Author savedAuthor = authorService.saveAuthor(new Author(authorDTO));
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedAuthor.getId())
 				.toUri();
-		return ResponseEntity.created(location).body(new AuthorDTO(savedAuthor));
+		return ResponseEntity.created(location).body(savedAuthor);
 	}
 
 	@GetMapping("/authors/{id}")

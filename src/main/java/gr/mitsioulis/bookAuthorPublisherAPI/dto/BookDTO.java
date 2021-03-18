@@ -1,8 +1,9 @@
 package gr.mitsioulis.bookAuthorPublisherAPI.dto;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.group.GroupSequenceProvider;
 
@@ -16,7 +17,6 @@ import gr.mitsioulis.bookAuthorPublisherAPI.annotations.ValidPublisher;
 import gr.mitsioulis.bookAuthorPublisherAPI.common.validationGroup.BookDTOGroupSequenceProvider;
 import gr.mitsioulis.bookAuthorPublisherAPI.common.validationGroup.FirstValidation;
 import gr.mitsioulis.bookAuthorPublisherAPI.common.validationGroup.SecondValidation;
-import gr.mitsioulis.bookAuthorPublisherAPI.common.validationGroup.ThirdValidation;
 import gr.mitsioulis.bookAuthorPublisherAPI.model.Author;
 import gr.mitsioulis.bookAuthorPublisherAPI.model.Book;
 import gr.mitsioulis.bookAuthorPublisherAPI.model.Publisher;
@@ -33,14 +33,15 @@ public class BookDTO {
 	@NotBlank(groups = FirstValidation.class, message = "Title is required")
 	private String    title;
 	@NotBlank(groups = FirstValidation.class, message = "Description is required")
-	@Column(length = 65535)
+	@Size(max = 3000, message = "should be maximum 100 characters", groups = SecondValidation.class)
 	private String    description;
-	private boolean   visibilityState;
-	@ValidDate(groups = ThirdValidation.class)
+	@Pattern(regexp = "^true$|^false$", message = "allowed input: true or false")
+	private String    visibilityStatus;
+	@ValidDate(groups = SecondValidation.class)
 	@NotBlank(groups = FirstValidation.class, message = "Creation date is required")
 	private String    creationDate;
 	@NotBlank(groups = FirstValidation.class, message = "ISBN number is required")
-	@ValidISBN(groups = ThirdValidation.class)
+	@ValidISBN(groups = SecondValidation.class)
 	private String    isbn;
 	@NotNull(groups = FirstValidation.class, message = "Author id is required")
 	@ValidAuthor(groups = SecondValidation.class)
@@ -51,7 +52,7 @@ public class BookDTO {
 	public BookDTO(Book book) {
 		this.title = book.getTitle();
 		this.description = book.getDescription();
-		this.visibilityState = book.getVisibilityStatus();
+		this.visibilityStatus = book.getVisibilityStatus().toString();
 		this.isbn = ISBNUtils.getPresentationISBN(book.getIsbn());
 		this.author = book.getAuthor();
 		this.publisher = book.getPublisher();

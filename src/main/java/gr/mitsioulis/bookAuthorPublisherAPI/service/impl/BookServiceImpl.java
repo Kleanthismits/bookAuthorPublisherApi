@@ -11,17 +11,28 @@ import org.springframework.stereotype.Service;
 
 import gr.mitsioulis.bookAuthorPublisherAPI.dao.BookDao;
 import gr.mitsioulis.bookAuthorPublisherAPI.model.Book;
+import gr.mitsioulis.bookAuthorPublisherAPI.service.AuthorService;
 import gr.mitsioulis.bookAuthorPublisherAPI.service.BookService;
+import gr.mitsioulis.bookAuthorPublisherAPI.service.PublisherService;
 
 @Service
 public class BookServiceImpl implements BookService {
 
 	@Autowired
-	BookDao bookDao;
+	BookDao          bookDao;
+	@Autowired
+	AuthorService    authorService;
+	@Autowired
+	PublisherService publisherService;
 
 	@Override
 	public Book saveBook(Book book) {
-		return bookDao.save(book);
+		Book savedBook = bookDao.saveAndFlush(book);
+		savedBook.setAuthor(authorService.findById(book.getAuthor().getId()).get());
+		if (savedBook.getPublisher() != null) {
+			savedBook.setPublisher(publisherService.findById(savedBook.getPublisher().getId()).get());
+		}
+		return savedBook;
 	}
 
 	@Override

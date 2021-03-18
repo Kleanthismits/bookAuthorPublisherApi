@@ -15,7 +15,9 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookDTO;
@@ -34,26 +36,30 @@ public class Book {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long      id;
 	@NotNull
+	@Column(length = 500)
 	private String    title;
 	@NotNull
-	@Column(length = 65535)
+	@Column(length = 3000)
 	private String    description;
 	private Boolean   visibilityStatus;
-	@Column(columnDefinition = "DATE")
+	@NotNull
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate creationDate;
 	@Min(value = 9780000000001l)
 	private Long      isbn;
 	@ManyToOne
 	@JoinColumn(name = "author_id", nullable = false)
+	@JsonIgnoreProperties("books")
 	private Author    author;
 	@ManyToOne
 	@JoinColumn(name = "publisher_id", nullable = true)
+	@JsonIgnoreProperties("books")
 	private Publisher publisher;
 
 	public Book(BookDTO bookDTO) {
 		this.title = bookDTO.getTitle();
 		this.description = bookDTO.getDescription();
-		this.visibilityStatus = bookDTO.isVisibilityState();
+		this.visibilityStatus = Boolean.valueOf(bookDTO.getVisibilityStatus());
 		this.creationDate = LocalDate.parse(bookDTO.getCreationDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		this.isbn = ISBNUtils.getISBNFromPresentation(bookDTO.getIsbn());
 		this.author = bookDTO.getAuthor();
@@ -74,7 +80,7 @@ public class Book {
 			this.setDescription(bookUpdateDTO.getDescription());
 		}
 		if (bookUpdateDTO.getVisibilityStatus() != null) {
-			this.setVisibilityStatus(bookUpdateDTO.getVisibilityStatus());
+			this.setVisibilityStatus(Boolean.valueOf(bookUpdateDTO.getVisibilityStatus()));
 		}
 		if (bookUpdateDTO.getCreationDate() != null) {
 			this.setCreationDate(

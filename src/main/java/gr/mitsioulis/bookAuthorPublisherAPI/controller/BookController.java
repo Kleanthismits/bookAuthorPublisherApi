@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import gr.mitsioulis.bookAuthorPublisherAPI.common.GenericResponse;
 import gr.mitsioulis.bookAuthorPublisherAPI.common.errors.ApiError;
 import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookDTO;
 import gr.mitsioulis.bookAuthorPublisherAPI.dto.BookListDTO;
@@ -73,11 +74,11 @@ public class BookController {
 	}
 
 	@PostMapping("/books")
-	ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO bookDTO) {
+	ResponseEntity<Book> createBook(@Valid @RequestBody BookDTO bookDTO) {
 		Book savedBook = bookService.saveBook(new Book(bookDTO));
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedBook.getId())
 				.toUri();
-		return ResponseEntity.created(location).body(new BookDTO(savedBook));
+		return ResponseEntity.created(location).body(savedBook);
 	}
 
 	@PutMapping("/books/{id}")
@@ -94,7 +95,7 @@ public class BookController {
 				book.updateBook(bookUpdateDTO);
 				URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 				Book savedBook = bookService.saveBook(book);
-				return ResponseEntity.status(HttpStatus.OK).location(location).body(new BookUpdateDTO(savedBook));
+				return ResponseEntity.status(HttpStatus.OK).location(location).body(savedBook);
 			} else {
 				ApiError apiError = new ApiError(400, "Validation Error", request.getServletPath());
 				Map<String, String> validationErrors = errors.stream().collect(Collectors
@@ -106,11 +107,11 @@ public class BookController {
 	}
 
 	@DeleteMapping("/books/{id}")
-	ResponseEntity<String> deleteBook(@PathVariable Long id) {
+	ResponseEntity<GenericResponse> deleteBook(@PathVariable Long id) {
 		Optional<Book> dbBook = bookService.findById(id);
 		if (dbBook.isPresent()) {
 			bookService.deleteBook(id);
-			return ResponseEntity.ok("Book successfully deleted");
+			return ResponseEntity.ok().body(new GenericResponse("Book successfully deleted"));
 		} else {
 			throw new NoSuchElementException("No book found for id: " + id);
 		}
